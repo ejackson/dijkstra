@@ -1,4 +1,4 @@
-(ns ring-tutorial.core
+(ns net.edmundjackson.server
   (:use compojure.core)
   (:use ring.middleware.reload)
   (:use ring.middleware.stacktrace)
@@ -23,7 +23,7 @@
 
 (def app
      (-> #'handler
-	 (wrap-reload '[ring-tutorial.core])
+	 (wrap-reload '[net.edmundjackson.server])
 	 (wrap-stacktrace)))
 
 (defn boot [port]
