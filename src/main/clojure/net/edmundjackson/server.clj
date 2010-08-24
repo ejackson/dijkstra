@@ -5,7 +5,7 @@
   (:use ring.adapter.jetty)
   (:use hiccup.core)
   (:use hiccup.page-helpers)
-  (:use net.edmundjackson.dijkstra))
+  (:use net.edmundjackson.astar))
 
 (defn view-layout [& content]
   (html

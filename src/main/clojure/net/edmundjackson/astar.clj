@@ -16,10 +16,6 @@
 (defn edge [{adjoining :adjoining} {id :id}]
   (adjoining id))
 
-;; See note above
-(defn neighbours [{adjoining :adjoining}]
-  (into {} (filter val adjoining)))
-
 ;;------------------------------------------------------------------------
 ;; Return the graph with v1 and v2 connected by an edge
 ;; of value edge
@@ -48,7 +44,8 @@
 
 (defn a-star-iter [g open closed node]
   (let [current      (first open)
-	neighbours   (neighbours (:vertex current))
+	neighbours   (into {} (filter val (-> current :vertex :adjoining)))
+	neighbouroo   (neighbours (:vertex current))
 	new-closed   (conj closed current)
 	admissable?  #(not (new-closed %))
 	new-open     (reduce
