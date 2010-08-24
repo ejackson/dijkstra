@@ -45,7 +45,6 @@
 (defn a-star-iter [g open closed node]
   (let [current      (first open)
 	neighbours   (into {} (filter val (-> current :vertex :adjoining)))
-	neighbouroo   (neighbours (:vertex current))
 	new-closed   (conj closed current)
 	admissable?  #(not (new-closed %))
 	new-open     (reduce
