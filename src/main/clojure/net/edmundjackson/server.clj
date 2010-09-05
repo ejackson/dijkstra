@@ -19,7 +19,7 @@
 
 (defroutes handler
   (GET "/route" [origin destination]
-       (view-layout (find-cycle-route origin destination))))
+       (a-star origin destination)))
 
 (def app
      (-> #'handler
