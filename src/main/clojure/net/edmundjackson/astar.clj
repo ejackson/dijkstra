@@ -1,5 +1,11 @@
 (ns net.edmundjackson.astar
   (:use clojure.contrib.json)
+  (:use compojure.core
+	compojure.route
+	ring.adapter.jetty
+	ring.middleware.reload
+	ring.middleware.stacktrace
+	        [clojure.contrib.http.agent :exclude (bytes)])
   (:import java.lang.Math))
 
 ;;-----------------------------------------------------------------------
@@ -29,6 +35,7 @@
 ;; =======================================================================
 ;; The algorithm bit
 ;; Construct an astar-node
+;; New superfluous comment
 (defn astar-node [heuristic vertex parent-node]
   (let [g (if (nil? (:g parent-node)) 0
 	      (+ (:g parent-node) (edge (:vertex parent-node) vertex)))
@@ -80,4 +87,37 @@
        :2 {:id :2 :adjoining {} :x 1 :y 0}
        :3 {:id :3 :adjoining {} :x 0 :y 1}}
      (connect :1 :2 12)
-     (connect :2 :3 23)))
+     (connect :2 :3 23)
+     (connect :1 :3 2)))
+
+;;-------------------------------------------------------------------------
+(defn kw-keys
+  "Convert a map with string keywords to keywords"
+  [in-map]
+  (reduce
+   (fn [m [k v]] (assoc m (keyword k) v))
+   {}
+   in-map))
+  
+;; -----------------=  REST Routing =-------------------
+(defroutes main-routes
+  (GET "/route" {query-params :query-params}
+       (let [qp (kw-keys query-params)]
+	 (str (a-star g (keyword (qp :origin)) (keyword (qp :destination)))))))
+
+;; ------------------------------------------------------
+;; Server endxo
+(def app
+     (-> #'main-routes
+	 (wrap-reload '(net.edmundjackson.astar))
+	 (wrap-stacktrace)))
+
+(defn boot []
+  (run-jetty #'app {:port 8083}))
+
+
+#_ (string (http-agent "http://localhost:8083/journeys/?origin=here&destination=there"
+		       :method "POST"))
+
+
+#_ (string (http-agent "http://localhost:8083/route?origin=1&destination=2"))
