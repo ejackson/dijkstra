@@ -35,7 +35,7 @@
 ;; =======================================================================
 ;; The algorithm bit
 ;; Construct an astar-node
-;; New superfluous comment
+
 (defn astar-node [heuristic vertex parent-node]
   (let [g (if (nil? (:g parent-node)) 0
 	      (+ (:g parent-node) (edge (:vertex parent-node) vertex)))
@@ -81,6 +81,8 @@
 		 node)))
 
 ;;-----------------------------------------------------------------------
+;; Example
+;; Cook up a little graph
 (def g
      (->
       {:1 {:id :1 :adjoining {} :x 0 :y 0}
@@ -89,6 +91,7 @@
      (connect :1 :2 12)
      (connect :2 :3 23)
      (connect :1 :3 2)))
+
 
 ;;-------------------------------------------------------------------------
 (defn kw-keys
@@ -106,18 +109,18 @@
 	 (str (a-star g (keyword (qp :origin)) (keyword (qp :destination)))))))
 
 ;; ------------------------------------------------------
-;; Server endxo
+;; Server end
 (def app
      (-> #'main-routes
 	 (wrap-reload '(net.edmundjackson.astar))
 	 (wrap-stacktrace)))
 
 (defn boot []
-  (run-jetty #'app {:port 8083}))
+  (run-jetty #'app {:port 9190}))
 
 
-#_ (string (http-agent "http://localhost:8083/journeys/?origin=here&destination=there"
-		       :method "POST"))
+;; Start the server
+#_ (future (boot))   ;;dodgy, TODO: FIX THIS FOOLISHNESS
 
-
+;; Query via the web
 #_ (string (http-agent "http://localhost:8083/route?origin=1&destination=2"))
